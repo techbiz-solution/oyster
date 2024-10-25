@@ -1,26 +1,37 @@
-// src/app/menu/page.tsx
 'use client'
 
 import Image from "next/image";
 import liff from '@line/liff';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function MenuPage() {
-  useEffect(() => {
-    // Initialize LIFF
-    liff.init({ liffId: '2006431561-Rbdl37YN' }).then(() => {
-      if (!liff.isInClient()) {
-        // If not in the LINE app, don't open the external browser
-        return;
-      }
+  const [loading, setLoading] = useState(true);
 
-      // Open the current window in an external browser to remove the toolbar
-      liff.openWindow({
-        url: window.location.href, // The current URL
-        external: true,            // Set this to true to open in external browser
+  useEffect(() => {
+    const alreadyOpened = sessionStorage.getItem('openedInBrowser');
+    
+    if (!alreadyOpened) {
+      liff.init({ liffId: '2006431561-Rbdl37YN' }).then(() => {
+        if (liff.isInClient()) {
+          liff.openWindow({
+            url: window.location.href,
+            external: true,
+          });
+
+          sessionStorage.setItem('openedInBrowser', 'true');
+        }
+        setLoading(false);
+      }).catch((err) => {
+        console.error('LIFF initialization failed', err);
+        setLoading(false);
       });
-    });
+    }
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   const categories = ['All', 'Oyster', 'Box set', 'Drinks'];
   const menuItems = [
     { id: 1, name: 'Seafood Platter', price: 1499, imageUrl: '/images/set1.jpg' },
@@ -29,7 +40,6 @@ export default function MenuPage() {
     { id: 4, name: 'Gillardeau', price: 2499, imageUrl: '/images/set4.jpg' },
   ];
 
-  // Function to format the price with commas
   const formatPrice = (price: number) => {
       return new Intl.NumberFormat('th-TH', {
       style: 'currency',
@@ -40,7 +50,6 @@ export default function MenuPage() {
 
   return (
     <main className="min-h-screen bg-blue-100 rounded-l-3xl p-4">
-      {/* Search bar */}
       <div className="mb-4">
         <input
           type="text"
@@ -49,7 +58,6 @@ export default function MenuPage() {
         />
       </div>
 
-      {/* Category section */}
       <div className="mb-4">
         <ul className="flex overflow-x-auto space-x-4">
           {categories.map((category) => (
@@ -62,15 +70,14 @@ export default function MenuPage() {
         </ul>
       </div>
 
-      {/* Menu grid */}
       <div className="grid grid-cols-2 gap-4">
           {menuItems.map((item) => (
           <div key={item.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
               <Image
-              src={item.imageUrl}  // Image path from public folder
-              alt={item.name}       // Accessible alt text for the image
-              width={500}           // Define width for optimization
-              height={200}          // Define height for optimization
+              src={item.imageUrl}
+              alt={item.name}
+              width={500}
+              height={200}
               className="rounded-lg object-cover"
               />
               <div className="p-4">
@@ -80,6 +87,6 @@ export default function MenuPage() {
           </div>
           ))}
       </div>
-      </main>
+    </main>
   );
 }
