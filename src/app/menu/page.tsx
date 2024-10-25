@@ -1,6 +1,6 @@
-'use client'
+'use client';
 
-import Image from "next/image";
+import Image from 'next/image';
 import liff from '@line/liff';
 import { useEffect, useState } from 'react';
 
@@ -8,24 +8,37 @@ export default function MenuPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const alreadyOpened = sessionStorage.getItem('openedInBrowser');
+    console.log('Starting LIFF initialization...');
     
-    if (!alreadyOpened) {
-      liff.init({ liffId: '2006431561-Rbdl37YN' }).then(() => {
+    const alreadyOpened = sessionStorage.getItem('openedInBrowser');
+    if (alreadyOpened) {
+      console.log('Already opened in browser, skipping liff.openWindow()');
+      setLoading(false);
+      return;
+    }
+
+    liff.init({ liffId: '2006431561-Rbdl37YN' })
+      .then(() => {
+        console.log('LIFF initialized successfully');
         if (liff.isInClient()) {
+          console.log('Inside LINE client, opening in external browser...');
+          
           liff.openWindow({
-            url: window.location.href,
-            external: true,
+            url: window.location.href, // The current URL
+            external: true,            // Open in external browser
           });
 
+          // Mark this session to prevent infinite looping
           sessionStorage.setItem('openedInBrowser', 'true');
+        } else {
+          console.log('Not inside LINE client, staying in current window');
         }
         setLoading(false);
-      }).catch((err) => {
-        console.error('LIFF initialization failed', err);
+      })
+      .catch((err) => {
+        console.error('LIFF initialization failed:', err);
         setLoading(false);
       });
-    }
   }, []);
 
   if (loading) {
