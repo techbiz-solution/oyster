@@ -22,7 +22,9 @@ export default function MenuLayout({
       // Initialize LIFF and fetch the user's profile
       liff.init({ liffId: '2006431561-Rbdl37YN' })
         .then(() => {
+          console.log("test")
           if (liff.isLoggedIn()) {
+            console.log("is login")
             liff.getProfile()
               .then((userProfile) => {
                 setProfile(userProfile); // Set the profile in state
@@ -32,7 +34,7 @@ export default function MenuLayout({
                 setError('Failed to load profile data.');
               });
           } else {
-            liff.login({ redirectUri: window.location.href }); // Trigger login if the user isn't logged in
+            liff.login({ redirectUri: 'https://oyster.vercel.app/menu' }); // Trigger login if the user isn't logged in
           }
         })
         .catch((err) => {
