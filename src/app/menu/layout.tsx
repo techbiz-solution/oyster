@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import liff from '@line/liff';
 
 interface Profile {
@@ -17,31 +18,30 @@ export default function MenuLayout({
   }) {
     const [profile, setProfile] = useState<Profile | null>(null); // Store user profile
     const [error, setError] = useState<string | null>(null); // Error state
+    const router = useRouter();
   
     useEffect(() => {
-      // Initialize LIFF and fetch the user's profile
-      liff.init({ liffId: '2006431561-Rbdl37YN' })
-        .then(() => {
-          console.log("test")
+      const initLiff = async () => {
+        try {
+          await liff.init({ liffId: '2006431561-Rbdl37YN' });
+  
+          // Check if user is already logged in
           if (liff.isLoggedIn()) {
-            console.log("is login")
-            liff.getProfile()
-              .then((userProfile) => {
-                setProfile(userProfile); // Set the profile in state
-              })
-              .catch((err) => {
-                console.error('Error fetching profile:', err);
-                setError('Failed to load profile data.');
-              });
+            const userProfile = await liff.getProfile();
+            setProfile(userProfile); // Set the profile in the state
           } else {
-            liff.login({ redirectUri: 'https://oyster.vercel.app/menu' }); // Trigger login if the user isn't logged in
+            // If not logged in, redirect the user to the login page
+            liff.login({ redirectUri: window.location.href }); // Use current URL as the redirect
           }
-        })
-        .catch((err) => {
+        } catch (err) {
           console.error('LIFF initialization failed:', err);
           setError('LIFF initialization failed.');
-        });
-    }, []); // Only run once when the layout is loaded
+        }
+      };
+  
+      initLiff();
+    }, [router]); // Ensure it runs only once on load
+  
 
     return (
       <section className="min-h-screen bg-white">
