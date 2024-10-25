@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import liff from '@line/liff';
+import Image from 'next/image';
 
 // Define the type for the profile based on the LIFF API
 interface Profile {
@@ -58,7 +59,13 @@ export default function Home() {
         <>
           {/* Conditionally render the profile picture if it exists */}
           {profile.pictureUrl ? (
-            <img src={profile.pictureUrl} alt="Profile" className="rounded-full w-24 h-24 mb-4" />
+            <Image
+            src={profile.pictureUrl}
+            alt="Profile"
+            width={40}
+            height={40}
+            className="rounded-full w-24 h-24 mb-4"
+          />
           ) : (
             <div className="w-24 h-24 mb-4 rounded-full bg-gray-200 flex items-center justify-center">
               <span>No Image</span>

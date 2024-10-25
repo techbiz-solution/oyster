@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import liff from '@line/liff';
 import MapPickerModal from '@/components/MapPickerModal';
+import Image from 'next/image';
 
 // Define the type for the user profile
 interface Profile {
@@ -57,11 +58,13 @@ export default function MenuLayout({
         <div className="flex items-center space-x-4">
           {/* Display the profile picture and display name if available */}
           {profile?.pictureUrl ? (
-            <img
-              src={profile.pictureUrl}
-              alt="Profile"
-              className="w-10 h-10 rounded-full"
-            />
+            <Image
+            src={profile.pictureUrl}
+            alt="Profile"
+            width={40}
+            height={40}
+            className="rounded-full"
+          />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-300"></div>
           )}
@@ -94,7 +97,7 @@ export default function MenuLayout({
 
 
       {/* Content will be injected here */}
-      <main className="pt-24">
+      <main className="pt-36">
         {error && <p className="text-red-500 text-center">{error}</p>}
         {children}
       </main>
