@@ -84,7 +84,25 @@
 // }
 
 // src/app/page.tsx
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function HomePage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Extract query parameters from the current URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const liffState = urlParams.get('liff.state');  // Retrieve liff.state from URL
+
+    if (liffState) {
+      // If liff.state exists, navigate to the specified page
+      router.replace(liffState);  // Replace the current URL with the correct path
+    }
+  }, [router]);
+
   return (
     <div className="flex items-center justify-center h-screen bg-black-100">
       <h1 className="text-4xl font-bold">Welcome to Oyster App</h1>
